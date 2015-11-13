@@ -1,0 +1,1708 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Control Page</title>
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script src='http://static.opentok.com/webrtc/v2.2/js/opentok.min.js'></script>
+    
+    <!-- import d3 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+  
+
+  <link href="switch/bootstrap-switch.css" rel="stylesheet">
+  <script src="switch/bootstrap-switch.js"></script>
+
+  <!-- for all the session information -->
+  <script src="js/mytoken.js"></script>
+  
+  <style type="text/css">
+    h3 {
+      margin: 10px auto 10px;
+      width: 150px;
+    }
+
+    .controlContainer {
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+      margin: 10px auto;
+      width: 500px;
+      height: 200px;
+      /*position: absolute;*/
+    }
+
+    .controlContainerOther {
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+      margin: 10px auto;
+      width: 450px;
+      height: 60px;
+      /*position: absolute;*/
+    }
+
+    #controlContainerFake {
+      height: 330px;
+    }
+    #MTContainer {
+/*      border-radius: 3px;
+      border:1px solid #d3d3d3;
+      margin: 30px auto;
+      width: 640px;
+      height: 410px;*/
+    }
+    #controlContainerMTLeft {
+      margin: 10px auto;
+      width: 880px;
+      height: 480px;
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+    }
+
+    #controlContainerMTRight {
+      margin: 10px auto;
+      width: 880px;
+      height: 480px;
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+    }
+
+    .MTInput {
+      width: 880px;
+      height: 420px;
+/*      border-radius: 3px;
+      border:1px solid #d3d3d3;*/
+    }
+    .radioSection {
+      margin: 5px;
+      width:280px;
+      height: 350px;
+      float: left;
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+    }
+    .inputBox {
+      margin: 2px;
+      width: 132px;
+      height: 160px;
+      float: left;
+    }
+    .updateBtn {
+      float: right;
+      margin-right: 10px;
+    }
+
+    .bordered {
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+    }
+
+    .input-group {
+      margin: 5px;
+    }
+    .smallTitle {
+      margin: 5px;
+    }
+
+    .mySwitch {
+      float: left;
+      border-radius: 5px;
+      margin: 10px 10px 0 10px;
+      /*box-shadow: 0px 0px 10px red;*/
+
+    }
+
+    .diagramGP {
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+      margin: 10px;
+      float: left;
+      width: 480px;
+      height: 240;
+      background-color: #e9e9e9;
+    }
+
+    .cameraControlSection {
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+      margin: 10px;
+      float: left;
+      width: 225px;
+      height: 180px;
+    }
+
+    .prioritySection {
+      border-radius: 3px;
+      border:1px solid #d3d3d3;
+      margin: 10px;
+      float: left;
+      width: 225px;
+      height: 180px;
+    }
+
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .axis text {
+      font-size: 12px;
+    }
+
+    .x.axis text {
+      display: none;
+    }
+
+    #BDDiagram, .line_bw {
+      fill: none;
+      stroke-width: 1.5px;
+      stroke: steelblue;
+    }
+
+    #txtbw {
+      margin-left: 20px;
+      margin-bottom: 5px;
+      color: grey;
+      font-size: 100%;
+    }
+
+    #txtmission {
+      margin-left: 20px;
+      margin-bottom: 5px;
+      color: #009900;
+      font-size: 100%;
+      font-weight: bold;
+    }
+    .prioirtyTxtInfo {
+      margin: 20px;
+    }
+    #time {
+      text-align: right;
+      margin-right: 10px;
+      font-size: 10px;
+    }
+
+    .highlight {
+      box-shadow: 0px 0px 20px red;
+    }
+
+    #autoMode {
+      margin-right: 10px;
+      margin-top: 10px;
+
+      float: right;
+      /*background-color: red;*/
+    }
+    .lowLimitLine {
+        fill: none;
+        stroke: red;
+        stroke-width: 0.5px;
+        stroke-dasharray: 5 5;
+    }
+
+    .lowLimitLineText {
+        fill: red;
+        font-size: 10px;
+
+    }
+
+  </style>
+
+</head>
+
+<body >
+    <h3>Control Page</h3>
+
+    <div id="controlContainerFake" class="controlContainer">
+          <div id="autoMode">
+            <input id="autoModeSwitch" type="checkbox" name="my-checkbox" data-size="small" data-label-text="Auto Mode" data-label-width="60px">
+          </div>
+
+          <div class="diagramGP">
+            <div id="time" class="timeInfo">Time</div>
+            <div class="BwSection">
+              <div id="BD" class="BwDiagram"></div>
+              <div id="txtbw" class="textInfo">Bandwidth</div>
+              <div id="txtmission" class="textInfo"></div>
+            </div>
+          </div>
+    </div> 
+          
+
+    <div id="controlContainer1" class="controlContainer">
+          <div class="cameraControlSection">
+            <div class="mySwitch" id="mySwitch1">
+              <input id="switch1" type="checkbox" name="my-checkbox" data-label-text="Front Camera" data-label-width="100px" data-on-color="success" data-off-color="danger">
+            </div>
+
+            <div class="mySwitch" id="mySwitch11">
+              <input id="switch11" type="checkbox" name="my-checkbox" data-label-text="Resolution" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">
+            </div>
+
+            <div class="mySwitch" id="mySwitch12">
+              <input id="switch12" type="checkbox" name="my-checkbox" data-label-text="Frame Rate" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">  
+            </div>
+          </div>
+
+          <div class="prioritySection">
+            <div class="mySwitch">
+              <input id="switch10" type="checkbox" name="my-checkbox" data-label-text="Priority" data-label-width="100px" data-on-color="warning" data-off-color="default">  
+            </div>    
+          </div>
+
+
+    </div>
+
+
+    <div id="controlContainer2" class="controlContainer">
+          <div class="cameraControlSection">
+            <div class="mySwitch" id="mySwitch2">
+              <input id="switch2" type="checkbox" name="my-checkbox" data-label-text="Rear Camera" data-label-width="100px" data-on-color="success" data-off-color="danger">
+            </div>
+
+            <div class="mySwitch" id="mySwitch21">
+              <input id="switch21" type="checkbox" name="my-checkbox" data-label-text="Resolution" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">
+            </div>
+
+            <div class="mySwitch" id="mySwitch22">
+              <input id="switch22" type="checkbox" name="my-checkbox" data-label-text="Frame Rate" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">  
+            </div>
+          </div>
+
+          <div class="prioritySection">
+            <div class="mySwitch">
+              <input id="switch20" type="checkbox" name="my-checkbox" data-label-text="Priority" data-label-width="100px" data-on-color="warning" data-off-color="default">  
+            </div>
+          </div>      
+
+    </div>
+
+
+
+    <div id="controlContainer3" class="controlContainer">
+          <div class="cameraControlSection">
+            <div class="mySwitch" id="mySwitch3">
+              <input id="switch3" type="checkbox" name="my-checkbox" data-label-text="Left Camera" data-label-width="100px" data-on-color="success" data-off-color="danger">
+            </div>
+
+            <div class="mySwitch" id="mySwitch31">
+              <input id="switch31" type="checkbox" name="my-checkbox" data-label-text="Resolution" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">
+            </div>
+
+            <div class="mySwitch" id="mySwitch32">
+              <input id="switch32" type="checkbox" name="my-checkbox" data-label-text="Frame Rate" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">  
+            </div>
+          </div>
+
+          <div class="prioritySection">
+            <div class="mySwitch">
+              <input id="switch30" type="checkbox" name="my-checkbox" data-label-text="Priority" data-label-width="100px" data-on-color="warning" data-off-color="default">  
+            </div> 
+
+            <div class="mySwitch">
+              <input id="switch3MT" type="checkbox" name="my-checkbox" data-label-text="Motion Detect" data-label-width="100px" data-on-color="primary" data-off-color="default">  
+            </div> 
+            <!-- <div class="prioirtyTxtInfo">∆TI:<font id="ssimInfo3" color="green"></font></div> -->
+            <div class="prioirtyTxtInfo"><font id="priorityInfo3" color="red"></font></div>
+
+          </div>         
+
+    </div>
+
+
+    <div id="controlContainer4" class="controlContainer">
+          <div class="cameraControlSection">
+            <div class="mySwitch" id="mySwitch4">
+              <input id="switch4" type="checkbox" name="my-checkbox" data-label-text="Right Camera" data-label-width="100px" data-on-color="success" data-off-color="danger">
+            </div>
+
+            <div class="mySwitch" id="mySwitch41">
+              <input id="switch41" type="checkbox" name="my-checkbox" data-label-text="Resolution" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">
+            </div>
+
+            <div class="mySwitch" id="mySwitch42">
+              <input id="switch42" type="checkbox" name="my-checkbox" data-label-text="Frame Rate" data-label-width="100px" data-on-color="info" data-off-color="primary" data-on-text="LOW" data-off-text="HIGH">  
+            </div>
+          </div>
+          
+          <div class="prioritySection">
+            <div class="mySwitch">
+              <input id="switch40" type="checkbox" name="my-checkbox" data-label-text="Priority" data-label-width="100px" data-on-color="warning" data-off-color="default">  
+            </div>
+
+            <div class="mySwitch">
+              <input id="switch4MT" type="checkbox" name="my-checkbox" data-label-text="Motion Detect" data-label-width="100px" data-on-color="primary" data-off-color="default">  
+            </div> 
+            <!-- <div class="prioirtyTxtInfo">∆TI:<font id="ssimInfo3" color="green"></font></div> -->
+            <div class="prioirtyTxtInfo"><font id="priorityInfo4" color="red"></font></div>
+
+          </div>
+
+    </div>
+
+
+    <div id="controlContainer5" class="controlContainerOther">
+          <div class="mySwitch">
+            <input id="switchMap" type="checkbox" name="my-checkbox" data-label-text="Map Priority" data-label-width="120px" data-on-color="warning" data-off-color="default">
+          </div>
+
+          <div class="mySwitch">
+            <input id="switchTable" type="checkbox" name="my-checkbox" data-label-text="Table Priority" data-label-width="120px" data-on-color="warning" data-off-color="default">
+          </div>
+
+    </div>
+
+    <div id="MTContainer">
+      <div id="controlContainerMTLeft"  >
+            <div class="input-group">  
+              <h4>
+              Left Motion Detection
+              </h4>
+            </div>
+
+          <div class="MTInput">
+            <div class="radioSection">
+              <div>
+                <input type="radio" name="leftSelect" value="default" onclick="leftModeSelect(this)" checked>Default
+              </div>
+              <div class="bordered inputBox">
+                <p class="smallTitle">0-1 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.0003
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 3
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 20
+                </div>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">1-2 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.0003
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 3
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 20
+                </div>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">2-4 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.002
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 5
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 7
+                </div>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">4-6 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.003
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 10
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 11
+                </div>
+              </div>
+            </div>
+
+            <div class="radioSection">
+              <div>
+                <input type="radio" name="leftSelect" value="modified" onclick="leftModeSelect(this)">Modified
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">0-1 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="leftthq0">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="leftths0">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="lefttht0">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="leftupdate0()">Update!</button>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">1-2 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="leftthq1">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="leftths1">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="lefttht1">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="leftupdate1()">Update!</button>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">2-4 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="leftthq2">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="leftths2">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="lefttht2">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="leftupdate2()">Update!</button>
+              </div>
+
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">4-6 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="leftthq3">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="leftths3">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="lefttht3">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="leftupdate3()">Update!</button>
+              </div>
+            </div>
+
+            <div class="radioSection">
+              <div>
+                <input type="radio" name="leftSelect" value="universal" onclick="leftModeSelect(this)">Universal
+              </div>
+              <div class="bordered inputBox">
+                <p class="smallTitle">all mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="leftthquni">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="leftthsuni">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="leftthtuni">
+                </div>
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="leftupdateUniversal()">Update!</button>
+              </div>
+            </div>
+
+            <div class="mySwitch">
+              <input id="switchLeftDoVertical" type="checkbox" name="my-checkbox" data-label-text="Vertical Edges" data-label-width="120px" >
+            </div>
+
+            <div class="mySwitch">
+              <input id="switchLeftCheckThq" type="checkbox" name="my-checkbox" data-label-text="SSIM Filter" data-label-width="120px" >
+            </div>
+
+            <div class="mySwitch">
+              <input id="switchLeftBlur" type="checkbox" name="my-checkbox" data-label-text="Blur Filter" data-label-width="120px" >
+            </div>
+
+          </div>
+      </div> 
+
+
+
+    <div id="controlContainerMTRight"  >
+          <div class="input-group">  
+            <h4>
+            Right Motion Detection
+            </h4>
+          </div>
+
+          <div class="MTInput">
+            <div class="radioSection">
+              <div>
+                <input type="radio" name="rightSelect" value="default" onclick="rightModeSelect(this)" checked>Default
+              </div>
+              <div class="bordered inputBox">
+                <p class="smallTitle">0-1 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.0003
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 3
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 20
+                </div>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">1-2 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.0003
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 3
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 20
+                </div>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">2-4 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.002
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 5
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 7
+                </div>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">4-6 mph</p>
+                <div class="input-group">
+                  th<sub>q</sub>: 0.003
+                </div>
+
+                <div class="input-group">
+                  th<sub>s</sub>: 10
+                </div>
+
+                <div class="input-group">
+                  th<sub>t</sub>: 11
+                </div>
+              </div>
+            </div>
+
+            <div class="radioSection">
+              <div>
+                <input type="radio" name="rightSelect" value="modified" onclick="rightModeSelect(this)">Modified
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">0-1 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="rightthq0">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="rightths0">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="righttht0">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="rightupdate0()">Update!</button>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">1-2 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="rightthq1">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="rightths1">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="righttht1">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="rightupdate1()">Update!</button>
+              </div>
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">2-4 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="rightthq2">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="rightths2">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="righttht2">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="rightupdate2()">Update!</button>
+              </div>
+
+
+              <div class="bordered inputBox">
+                <p class="smallTitle">4-6 mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="rightthq3">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="rightths3">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="righttht3">
+                </div>
+
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="rightupdate3()">Update!</button>
+              </div>
+            </div>
+
+            <div class="radioSection">
+              <div>
+                <input type="radio" name="rightSelect" value="universal" onclick="rightModeSelect(this)">Universal
+              </div>
+              <div class="bordered inputBox">
+                <p class="smallTitle">all mph</p>
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>q</sub></span>
+                  <input type="number" min="0" max="5000" class="form-control input-sm" id="rightthquni">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon ">th<sub>s</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="rightthsuni">
+                </div>
+
+                <div class="input-group">
+                  <span class="input-group-addon">th<sub>t</sub></span>
+                  <input type="number" min="0" max="5000" step="0.1" class="form-control input-sm" id="rightthtuni">
+                </div>
+                <button class="btn btn-default btn-xs updateBtn" type="button" onclick="rightupdateUniversal()">Update!</button>
+              </div>
+            </div>
+
+            <div class="mySwitch">
+              <input id="switchRightDoVertical" type="checkbox" name="my-checkbox" data-label-text="Vertical Edges" data-label-width="120px" >
+            </div>
+
+            <div class="mySwitch">
+              <input id="switchRightCheckThq" type="checkbox" name="my-checkbox" data-label-text="SSIM Filter" data-label-width="120px" >
+            </div>
+
+            <div class="mySwitch">
+              <input id="switchRightBlur" type="checkbox" name="my-checkbox" data-label-text="Blur Filter" data-label-width="120px" >
+            </div>
+
+          </div>
+    </div> 
+    </div>
+
+
+<script type="text/javascript">
+  $("[name='my-checkbox']").bootstrapSwitch();
+
+  //set up the loop
+  var autoMode = false;
+  var currentBWState = "normal";
+  var changeOfBWState = false;
+
+</script>
+
+<script>
+  //data session
+  dataSession = OT.initSession(apiKey , dataId);
+    
+  frontSession = OT.initSession(apiKey, frontId);
+  rearSession = OT.initSession(apiKey, rearId);
+  leftSession = OT.initSession(apiKey, leftId);
+  rightSession = OT.initSession(apiKey, rightId);
+
+  var sessionArray = [];
+  // sessionArray.push(frontSession);
+  sessionArray.push(rearSession);
+  sessionArray.push(leftSession);
+  sessionArray.push(rightSession);
+  sessionArray.push(frontSession);
+
+
+  for (var index = 0; index < sessionArray.length; index++) {
+    sessionArray[index].on('streamCreated', function(event) {
+      switch(event.stream.name) {
+        case "Left Camera":
+        if ($("#switch3").bootstrapSwitch('state') == false) {
+          $("#switch3").bootstrapSwitch('state', true, true);
+        }
+
+        console.log("left camera streaming!");
+
+        break;
+
+        case "Front Camera":
+        if ($("#switch1").bootstrapSwitch('state') == false) {            
+          $("#switch1").bootstrapSwitch('state', true, true);
+        }
+
+
+        console.log("front camera streaming!");
+        break;
+
+        case "Right Camera":
+        if ($("#switch4").bootstrapSwitch('state') == false) {
+          $("#switch4").bootstrapSwitch('state', true, true);
+        }
+
+        console.log("Right camera streaming!");
+
+        break;
+
+        case "Rear Camera":
+        if ($("#switch2").bootstrapSwitch('state') == false) {
+          $("#switch2").bootstrapSwitch('state', true, true);
+        }
+
+        console.log("Rear camera streaming!");          
+        break;
+      }
+    });
+
+    sessionArray[index].on("streamDestroyed", function (event) {
+      event.preventDefault();
+      console.log(event.stream.name + "ended!");
+    // Now you can adjust the DOM elements around each
+      if (event.stream.name == 'Front Camera') {
+        if ($("#switch1").bootstrapSwitch('state') == true ) {
+          $("#switch1").bootstrapSwitch('state', false, true);
+        }
+        frontCamOn = false;
+      } else if (event.stream.name == 'Rear Camera') {
+        if ($("#switch2").bootstrapSwitch('state') == true ) {
+          $("#switch2").bootstrapSwitch('state', false, true);
+        }
+        rearCamOn = false;
+      } else if (event.stream.name == 'Left Camera') {
+        if ($("#switch3").bootstrapSwitch('state') == true ) {
+          $("#switch3").bootstrapSwitch('state', false, true);
+        }
+        leftCamOn = false;
+      } else if (event.stream.name == 'Right Camera') {
+        if ($("#switch4").bootstrapSwitch('state') == true ) {
+          $("#switch4").bootstrapSwitch('state', false, true);
+        }
+        rightCamOn = false;
+      }
+    });
+  }
+
+//for dataSession
+dataSession.on("signal:priority", function(event) {
+    //for ssim detection
+    var data = event.data;
+    if (data.cameraView == "Left") {
+      document.getElementById("priorityInfo3").innerHTML = "Set as Priority!";
+      setTimeout(function() {
+        document.getElementById("priorityInfo3").innerHTML = null;
+      }, 5000);
+    } else if (data.cameraView == "Right") {
+      document.getElementById("priorityInfo4").innerHTML = "Set as Priority!";
+      setTimeout(function() {
+        document.getElementById("priorityInfo4").innerHTML = null;
+      }, 5000);
+    }
+  });
+
+</script>
+
+<script type="text/javascript">
+        var leftthq = 0.0003;
+        var leftths = 3;
+        var lefttht = 20;
+        //For Default Value
+        var defaultThArray = [];
+        defaultThArray[0] = {};
+        defaultThArray[1] = {};
+        defaultThArray[2] = {};
+        defaultThArray[3] = {};
+
+        //0 - 1
+        defaultThArray[0].thq = 0.0003;
+        defaultThArray[0].ths = 3;
+        defaultThArray[0].tht = 20;
+
+        //1 - 2
+        defaultThArray[1].thq = 0.0003;
+        defaultThArray[1].ths = 3;
+        defaultThArray[1].tht = 20;
+
+        //2 - 4
+        defaultThArray[2].thq = 0.002;
+        defaultThArray[2].ths = 5;
+        defaultThArray[2].tht = 7;
+
+        //4 - 6
+        defaultThArray[3].thq = 0.003;
+        defaultThArray[3].ths = 10;
+        defaultThArray[3].tht = 11;
+
+        //for Left
+        var leftMode = "default";
+        //initialize value
+        document.getElementById("leftthq0").value = defaultThArray[0].thq;
+        document.getElementById("leftths0").value = defaultThArray[0].ths;
+        document.getElementById("lefttht0").value = defaultThArray[0].tht;
+        document.getElementById("leftthq1").value = defaultThArray[1].thq;
+        document.getElementById("leftths1").value = defaultThArray[1].ths;
+        document.getElementById("lefttht1").value = defaultThArray[1].tht;
+        document.getElementById("leftthq2").value = defaultThArray[2].thq;
+        document.getElementById("leftths2").value = defaultThArray[2].ths;
+        document.getElementById("lefttht2").value = defaultThArray[2].tht;
+        document.getElementById("leftthq3").value = defaultThArray[3].thq;
+        document.getElementById("leftths3").value = defaultThArray[3].ths;
+        document.getElementById("lefttht3").value = defaultThArray[3].tht;
+        document.getElementById("leftthquni").value = defaultThArray[0].thq;
+        document.getElementById("leftthsuni").value = defaultThArray[0].ths;
+        document.getElementById("leftthtuni").value = defaultThArray[0].tht;
+
+        //for Left
+        var rightMode = "default";
+        //initialize value
+        document.getElementById("rightthq0").value = defaultThArray[0].thq;
+        document.getElementById("rightths0").value = defaultThArray[0].ths;
+        document.getElementById("righttht0").value = defaultThArray[0].tht;
+        document.getElementById("rightthq1").value = defaultThArray[1].thq;
+        document.getElementById("rightths1").value = defaultThArray[1].ths;
+        document.getElementById("righttht1").value = defaultThArray[1].tht;
+        document.getElementById("rightthq2").value = defaultThArray[2].thq;
+        document.getElementById("rightths2").value = defaultThArray[2].ths;
+        document.getElementById("righttht2").value = defaultThArray[2].tht;
+        document.getElementById("rightthq3").value = defaultThArray[3].thq;
+        document.getElementById("rightths3").value = defaultThArray[3].ths;
+        document.getElementById("righttht3").value = defaultThArray[3].tht;
+        document.getElementById("rightthquni").value = defaultThArray[0].thq;
+        document.getElementById("rightthsuni").value = defaultThArray[0].ths;
+        document.getElementById("rightthtuni").value = defaultThArray[0].tht;
+
+        function leftupdate0() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Left";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 0;
+          mtInfoObject.value.thq = document.getElementById("leftthq0").value;
+          mtInfoObject.value.ths = document.getElementById("leftths0").value;
+          mtInfoObject.value.tht = document.getElementById("lefttht0").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function leftupdate1() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Left";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 1;
+          mtInfoObject.value.thq = document.getElementById("leftthq1").value;
+          mtInfoObject.value.ths = document.getElementById("leftths1").value;
+          mtInfoObject.value.tht = document.getElementById("lefttht1").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function leftupdate2() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Left";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 2;
+          mtInfoObject.value.thq = document.getElementById("leftthq2").value;
+          mtInfoObject.value.ths = document.getElementById("leftths2").value;
+          mtInfoObject.value.tht = document.getElementById("lefttht2").value;
+          mtInfo(mtInfoObject);
+        }
+        function leftupdate3() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Left";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 3;
+          mtInfoObject.value.thq = document.getElementById("leftthq3").value;
+          mtInfoObject.value.ths = document.getElementById("leftths3").value;
+          mtInfoObject.value.tht = document.getElementById("lefttht3").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function leftupdateUniversal() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Left";
+          mtInfoObject.param = "ThU";
+          mtInfoObject.value = {};
+          mtInfoObject.value.thq = document.getElementById("leftthquni").value;
+          mtInfoObject.value.ths = document.getElementById("leftthsuni").value;
+          mtInfoObject.value.tht = document.getElementById("leftthtuni").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function rightupdate0() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Right";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 0;
+          mtInfoObject.value.thq = document.getElementById("rightthq0").value;
+          mtInfoObject.value.ths = document.getElementById("rightths0").value;
+          mtInfoObject.value.tht = document.getElementById("righttht0").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function rightupdate1() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Right";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 1;
+          mtInfoObject.value.thq = document.getElementById("rightthq1").value;
+          mtInfoObject.value.ths = document.getElementById("rightths1").value;
+          mtInfoObject.value.tht = document.getElementById("righttht1").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function rightupdate2() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Right";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 2;
+          mtInfoObject.value.thq = document.getElementById("rightthq2").value;
+          mtInfoObject.value.ths = document.getElementById("rightths2").value;
+          mtInfoObject.value.tht = document.getElementById("righttht2").value;
+          mtInfo(mtInfoObject);
+        }
+        function rightupdate3() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Right";
+          mtInfoObject.param = "ThM";
+          mtInfoObject.value = {};
+          mtInfoObject.value.index = 3;
+          mtInfoObject.value.thq = document.getElementById("rightthq3").value;
+          mtInfoObject.value.ths = document.getElementById("rightths3").value;
+          mtInfoObject.value.tht = document.getElementById("righttht3").value;
+          mtInfo(mtInfoObject);
+        }
+
+        function rightupdateUniversal() {
+          var mtInfoObject = {};
+          mtInfoObject.camera = "Right";
+          mtInfoObject.param = "ThU";
+          mtInfoObject.value = {};
+          mtInfoObject.value.thq = document.getElementById("rightthquni").value;
+          mtInfoObject.value.ths = document.getElementById("rightthsuni").value;
+          mtInfoObject.value.tht = document.getElementById("rightthtuni").value;
+          mtInfo(mtInfoObject);
+        }
+
+
+        //for radio button 
+        function leftModeSelect(radio) {
+          console.log("left mode is " + radio.value);
+          var selectObject = {};
+          selectObject.camera = "Left";
+          selectObject.param = radio.value;
+          mtInfo(selectObject);
+          dataSession.signal(
+            {
+              data: selectObject,
+              type: "selectMode"
+            },
+            function(error) {
+             if (error) {
+                console.log("signal error ("
+                            + error.code
+                            + "): " + error.message);
+              } else {
+                 console.log("selectMode signal sent." + selectObject);
+              } 
+            }                      
+          );
+        }
+
+        function rightModeSelect(radio) {
+          console.log("right mode is " + radio.value);
+          var selectObject = {};
+          selectObject.camera = "Right";
+          selectObject.param = radio.value;
+          mtInfo(selectObject);
+          dataSession.signal(
+            {
+              data: selectObject,
+              type: "selectMode"
+            },
+            function(error) {
+             if (error) {
+                console.log("signal error ("
+                            + error.code
+                            + "): " + error.message);
+              } else {
+                 console.log("selectMode signal sent." + selectObject);
+              } 
+            }                      
+          );
+        }
+        //default switch values
+        //default mt on
+        $("#switch3MT").bootstrapSwitch('state', true, true);
+        $("#switch4MT").bootstrapSwitch('state', true, true);
+
+        //defalut blur off
+        $("#switchLeftBlur").bootstrapSwitch('state', true, true);
+        $("#switchRightBlur").bootstrapSwitch('state', true, true);
+
+        //defalut check Thq on
+        $("#switchLeftCheckThq").bootstrapSwitch('state', true, true);
+        $("#switchRightCheckThq").bootstrapSwitch('state', true, true);
+
+        //default sobel vertical on
+        $("#switchLeftDoVertical").bootstrapSwitch('state', true, true);
+        $("#switchRightDoVertical").bootstrapSwitch('state', true, true);
+
+
+        $("#switchLeftBlur").on('switchChange.bootstrapSwitch', function(event, state) {
+            var mtInfoObject = {};
+            mtInfoObject.camera = "Left";
+            mtInfoObject.param = "doBlur";
+            mtInfoObject.value = state;
+            mtInfo(mtInfoObject);
+          }
+        );
+
+        $("#switchLeftDoVertical").on('switchChange.bootstrapSwitch', function(event, state) {
+            var mtInfoObject = {};
+            mtInfoObject.camera = "Left";
+            mtInfoObject.param = "doVertical";
+            mtInfoObject.value = state;
+            mtInfo(mtInfoObject);
+
+          }
+        );
+
+        $("#switchLeftCheckThq").on('switchChange.bootstrapSwitch', function(event, state) {
+            var mtInfoObject = {};
+            mtInfoObject.camera = "Left";
+            mtInfoObject.param = "checkThq";
+            mtInfoObject.value = state;
+            mtInfo(mtInfoObject);
+          }
+        );
+
+        $("#switchRightBlur").on('switchChange.bootstrapSwitch', function(event, state) {
+            var mtInfoObject = {};
+            mtInfoObject.camera = "Right";
+            mtInfoObject.param = "doBlur";
+            mtInfoObject.value = state;
+            mtInfo(mtInfoObject);
+          }
+        );
+
+        $("#switchRightDoVertical").on('switchChange.bootstrapSwitch', function(event, state) {
+            var mtInfoObject = {};
+            mtInfoObject.camera = "Right";
+            mtInfoObject.param = "doVertical";
+            mtInfoObject.value = state;
+            mtInfo(mtInfoObject);
+          }
+        );
+
+        $("#switchRightCheckThq").on('switchChange.bootstrapSwitch', function(event, state) {
+            var mtInfoObject = {};
+            mtInfoObject.camera = "Right";
+            mtInfoObject.param = "checkThq";
+            mtInfoObject.value = state;
+            mtInfo(mtInfoObject);
+          }
+        );
+
+  function mtInfo(info) {
+
+    dataSession.signal(
+      {
+        data: info,
+        type: "mtInfo"
+      },
+      function(error) {
+       if (error) {
+          console.log("signal error ("
+                      + error.code
+                      + "): " + error.message);
+        } else {
+           console.log(info);
+        } 
+      }                      
+    );
+  }
+
+
+  $("#switch3MT").on('switchChange.bootstrapSwitch', function(event, state) {
+    motionDect("Left", state);
+  });
+
+  $("#switch4MT").on('switchChange.bootstrapSwitch', function(event, state) {
+    motionDect("Right", state);
+  });
+
+
+  function motionDect(camera, state) {
+    var motionDect;
+    if (state) {
+      motionDect = "On";
+    } else {
+      //default
+      motionDect = "Off";
+    }
+    dataSession.signal(
+      {
+        data: (camera + motionDect),
+        type: "mt"
+      },
+      function(error) {
+       if (error) {
+          console.log("signal error ("
+                      + error.code
+                      + "): " + error.message);
+        } else {
+           console.log("motionDect signal sent." + camera + motionDect);
+        } 
+      }                      
+    );
+  }
+
+</script>
+
+
+
+
+
+<script type="text/javascript">
+
+  // $("#switch1").bootstrapSwitch('state', true, true);
+
+  $("#autoModeSwitch").on('switchChange.bootstrapSwitch', function(event, state) {
+    autoMode = state;
+    console.log("autoMode is " + autoMode);
+  });
+
+  $("#switch1").on('switchChange.bootstrapSwitch', function(event, state) {
+    camStat('Front', state, frontSession);
+  });
+
+  $("#switch2").on('switchChange.bootstrapSwitch', function(event, state) {
+    camStat('Rear', state, rearSession);
+  });
+
+  $("#switch3").on('switchChange.bootstrapSwitch', function(event, state) {
+    camStat('Left', state, leftSession);
+  });
+
+  $("#switch4").on('switchChange.bootstrapSwitch', function(event, state) {
+    camStat('Right', state, rightSession);
+  });
+
+
+  function camStat(camId, state, currentSession) {
+    var command;
+
+    if (state) {
+      command = "start".concat(camId);
+      console.log("starting " + camId + " camera...");
+    } else {
+      command = "stop".concat(camId);
+      console.log("stopping " + camId + " camera...");
+    }
+
+      currentSession.signal(
+        {
+        // to: connections[num];
+          data: command,
+          type: "ViewControl"
+        },
+        function(error) {
+         if (error) {
+            console.log("signal error ("
+                        + error.code
+                        + "): " + error.message);
+          } else {
+             console.log("signal sent.");
+          } 
+        }                      
+      );
+  }
+
+
+</script>
+
+
+<script type="text/javascript">
+  
+  //for resolution function
+  $("#switch11").on('switchChange.bootstrapSwitch', function(event, state) {
+    resolutionChange(frontSession, state);
+  });
+
+  $("#switch21").on('switchChange.bootstrapSwitch', function(event, state) {
+    resolutionChange(rearSession, state);
+  });
+
+  $("#switch31").on('switchChange.bootstrapSwitch', function(event, state) {
+    resolutionChange(leftSession, state);
+  });
+
+  $("#switch41").on('switchChange.bootstrapSwitch', function(event, state) {
+    resolutionChange(rightSession, state);
+
+  });
+
+
+  function resolutionChange(currentSession, state) {
+    var command;
+    if (state) {
+      //low resolution
+      command = "LR";
+    } else {
+      //high resolution
+      command = "HR";
+    }
+    currentSession.signal(
+      {
+      // to: connections[num];
+        data: command,
+        type: "resControl"
+      },
+      function(error) {
+       if (error) {
+          console.log("signal error ("
+                      + error.code
+                      + "): " + error.message);
+        } else {
+           console.log("signal sent.");
+        } 
+      }                      
+    );
+  }
+
+
+  
+  //for frame rate function
+  $("#switch12").on('switchChange.bootstrapSwitch', function(event, state) {
+    frameChange(frontSession, state);
+  });
+
+  $("#switch22").on('switchChange.bootstrapSwitch', function(event, state) {
+    frameChange(rearSession, state);
+  });
+
+  $("#switch32").on('switchChange.bootstrapSwitch', function(event, state) {
+    frameChange(leftSession, state);
+  });
+
+  $("#switch42").on('switchChange.bootstrapSwitch', function(event, state) {
+    frameChange(rightSession, state);
+
+  });
+
+
+  function frameChange(currentSession, state) {
+    var command;
+    if (state) {
+      //low resolution
+      command = "LF";
+    } else {
+      //high resolution
+      command = "HF";
+    }
+    currentSession.signal(
+      {
+      // to: connections[num];
+        data: command,
+        type: "frameControl"
+      },
+      function(error) {
+       if (error) {
+          console.log("signal error ("
+                      + error.code
+                      + "): " + error.message);
+        } else {
+           console.log("signal sent.");
+        } 
+      }                      
+    );
+  }
+
+
+  //for priority function
+  //all send to datasession
+  $("#switch10").on('switchChange.bootstrapSwitch', function(event, state) {
+    setPriority("front", state);
+  });
+
+  $("#switch20").on('switchChange.bootstrapSwitch', function(event, state) {
+    setPriority("rear", state);
+  });
+
+  $("#switch30").on('switchChange.bootstrapSwitch', function(event, state) {
+    setPriority("left", state);
+  });
+
+  $("#switch40").on('switchChange.bootstrapSwitch', function(event, state) {
+    setPriority("right", state);
+  });
+
+  $("#switchMap").on('switchChange.bootstrapSwitch', function(event, state) {
+    setPriority("map", state);
+  });
+
+
+  $("#switchTable").on('switchChange.bootstrapSwitch', function(event, state) {
+    setPriority("table", state);
+  });
+
+
+
+
+  function setPriority(camera, state) {
+    var priority;
+    if (state) {
+      priority = "On";
+    } else {
+      //default
+      priority = "Off";
+    }
+    dataSession.signal(
+      {
+        data: (camera + priority),
+        type: "priority"
+      },
+      function(error) {
+       if (error) {
+          console.log("signal error ("
+                      + error.code
+                      + "): " + error.message);
+        } else {
+           console.log("priority signal sent." + camera + priority);
+        } 
+      }                      
+    );
+  }
+
+
+//connect to each session
+frontSession.connect(frontToken);
+rearSession.connect(rearToken);
+leftSession.connect(leftToken);
+rightSession.connect(rightToken);
+dataSession.connect(dataToken);       
+
+</script>
+
+<script type="text/javascript">
+//for diagram
+var itemNum = 500;
+var maxY = 5000;
+var outerWidth = 460;
+var outerHeight = 200;
+var lowLimit = 500;
+
+var myData = d3.range(itemNum).map(function(index) {
+  return {
+    xValue: index
+  };
+});
+
+var yValues =
+d3.range(itemNum).map(function() {
+  return Math.random()*4000 + 1000;
+});
+
+for (var i = 20; i < 120; i++) {
+  yValues[i] = Math.random()*200 + 250;
+}
+
+var margin = {
+    top: 20,
+    right: 20,
+    bottom: 4.5,
+    left: 50
+  },
+  width = outerWidth - margin.left - margin.right,
+  height = outerHeight - margin.top - margin.bottom;
+
+
+//init the line function
+var line = d3.svg.line()
+  .x(function(d) {
+    return x(d.xValue);
+  })
+  .y(function(d) {
+    return y(d.yValue);
+  });
+
+//set the scale of x & y
+var x = d3.scale.linear()
+  .range([0, width]);
+var y = d3.scale.linear()
+  .range([height, 0]);
+//set the axis based on the scale
+var xAxis = d3.svg.axis()
+  .scale(x)
+  .orient("bottom")
+  .tickSize(0);
+var yAxis = d3.svg.axis()
+  .scale(y)
+  .orient("left")
+  .ticks(5)
+  .tickSize(0)
+  .outerTickSize(0);
+//set the domain of axis
+x.domain([0, itemNum]);
+// y.domain([0, maxY + 5]);
+y.domain([0, maxY + 500]);
+
+
+//get the diagram div
+var svgBD = d3.select("#BD").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+  svgBD.append("g")
+    .attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+  svgBD.append("g")
+    .attr("class", "y axis")
+    .call(yAxis)
+    .append("text")
+    .style("text-anchor", "end")
+    .text("Kpbs")
+    .attr("dy", "-.5em")
+    .attr("dx", ".5em");  
+
+// limit line
+  svgBD.append("line")
+    .attr("class", "lowLimitLine")
+    .attr("x1", 0)
+    .attr("y1", y(lowLimit))
+    .attr("x2", width)
+    .attr("y2", y(lowLimit));
+
+  svgBD.append('text')
+      .attr('x', 0)
+      .attr('y', y(lowLimit))
+      .attr('dy', '1em')
+      .attr('text-anchor', 'end')
+      .text("(500Kps)")
+      .attr('class', 'lowLimitLineText');
+
+
+//render the path
+function renderPath(svg) {
+  svg.append("path")
+    .datum(myData)
+    .attr("class", "line_bw")
+    .attr("d", line);
+}
+
+/*renderPath();*/
+var myInterval = setInterval(function(){
+  var newValue = yValues.shift();
+  yValues.push(newValue);
+
+  for (var i = 0; i < myData.length; i++) {
+    myData[i].yValue = yValues[i];
+  }
+  d3.selectAll("path.line_bw").remove();
+  renderPath(svgBD);
+
+  if (newValue < lowLimit) {
+    alertLow();
+
+    if (currentBWState == "normal") {
+      currentBWState = "low";
+      if (autoMode) {
+        setTimeout(function(){
+          BWChangeMissionFR(true);
+        }, 5000);
+        setTimeout(function(){
+          BWChangeMissionCV(false);
+        }, 37000);        
+      }
+    }
+  } else {
+    document.getElementById("txtbw").innerHTML="Normal";
+    document.getElementById("txtbw").style.color = "green";
+    if (currentBWState == "low") {
+      currentBWState = "normal";
+      if (autoMode) {
+        setTimeout(function(){
+          BWChangeMissionCV(true);
+        }, 5000);
+        setTimeout(function(){
+          BWChangeMissionFR(false);
+        }, 37000);        
+      }      
+    }
+  }
+}, 1000);
+
+function alertLow() {
+  document.getElementById("txtbw").innerHTML="Lower Than Limit!";
+  document.getElementById("txtbw").style.color = "red";
+}
+
+myTime = setInterval(function() {
+  var x = new Date();
+  var x1 = x.getHours( )+ ":" + x.getMinutes() + ":" + x.getSeconds();
+  document.getElementById("time").innerHTML=x1;
+}, 1000);
+
+
+
+function BWChangeMissionFR(state) {
+  console.log("start mission");
+  if (state == true) {
+    document.getElementById("txtmission").innerHTML="Lowering resolution and framerate for extra cameras";
+  } else {
+    document.getElementById("txtmission").innerHTML="Increasing resolution and framerate for extra cameras";
+  }
+
+      $("#mySwitch21").addClass("highlight");
+      $("#switch21").bootstrapSwitch('state', state);
+      setTimeout(function() {
+        $("#mySwitch21").removeClass("highlight");
+        $("#mySwitch22").addClass("highlight");
+        $("#switch22").bootstrapSwitch('state', state);
+        setTimeout(function() {
+          $("#mySwitch22").removeClass("highlight");
+          $("#mySwitch31").addClass("highlight");
+          $("#switch31").bootstrapSwitch('state', state);
+          setTimeout(function() {
+            $("#mySwitch31").removeClass("highlight");
+            $("#mySwitch32").addClass("highlight");
+            $("#switch32").bootstrapSwitch('state', state);
+            setTimeout(function() {
+              $("#mySwitch32").removeClass("highlight");
+              $("#mySwitch41").addClass("highlight");              
+              $("#switch41").bootstrapSwitch('state', state);
+              setTimeout(function() {
+                $("#mySwitch41").removeClass("highlight");
+                $("#mySwitch42").addClass("highlight");
+                $("#switch42").bootstrapSwitch('state', state);
+                setTimeout(function() {
+                  $("#mySwitch42").removeClass("highlight");
+                  document.getElementById("txtmission").innerHTML=null;
+                }, 4500);
+              }, 4500);              
+            }, 4500);
+          }, 4500);
+        }, 4500);
+      }, 4500);
+}
+
+function BWChangeMissionCV(state) {
+  console.log("start mission");
+
+  if (state == false) {
+    document.getElementById("txtmission").innerHTML="Shutting down extra cameras";
+  } else {
+    document.getElementById("txtmission").innerHTML="Turning on extra cameras";
+  }
+
+    $("#mySwitch2").addClass("highlight");
+    $("#switch2").bootstrapSwitch('state', state);
+    setTimeout(function() {
+      $("#mySwitch2").removeClass("highlight");
+      $("#mySwitch3").addClass("highlight");
+      $("#switch3").bootstrapSwitch('state', state);
+      setTimeout(function() {
+        $("#mySwitch3").removeClass("highlight");
+        $("#mySwitch4").addClass("highlight");
+        $("#switch4").bootstrapSwitch('state', state);
+        setTimeout(function() {
+          $("#mySwitch4").removeClass("highlight");
+          document.getElementById("txtmission").innerHTML=null;
+        }, 4500);
+      }, 4500);
+    }, 4500);
+
+}
+
+// setTimeout(function() {
+//   BWChangeMissionFR(true);
+// }, 3000);
+// setTimeout(function() {
+//   BWChangeMissionCV(true);
+// }, 15000);
+</script>
+</body>
+</html>

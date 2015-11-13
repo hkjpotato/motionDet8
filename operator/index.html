@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Main Console</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/style.css"/>
+  <script src="//static.opentok.com/v2/js/opentok.min.js"></script>  
+
+  <script src="/socket.io/socket.io.js"></script>
+
+
+  <style>
+    #publisher {
+      position: relative;
+    }
+    #left {
+      position:absolute;
+      left:0px;
+    }
+    #mid {
+      position:absolute;
+      left:280px;
+    }
+    #right {
+      position:absolute;
+      left:560px;
+    }
+
+    #rear {
+      position:absolute;
+      left:840px;
+    }
+
+
+    #cart {
+      position: absolute;
+      left: 0px;
+      top : 320px;
+    }
+
+    #control {
+      position: absolute;
+
+      left: 280px;
+      top: 320px;
+    }
+  </style>
+  
+  <script type="text/javascript">
+    // var valueObject = {
+    //       apiKey: "",
+    //       sessionId: "",
+    //       token: "" 
+    // };
+
+
+    // var publisher1, publisher2, publisher3, publisher4;
+    // var cartAudio, controlAudio;
+    // var cameraReady = false;
+
+    // var sendingGPS = null;
+    // var currLocation = {};
+
+    // var session;
+
+
+    // //This is provided by Tariq
+    // valueObject.apiKey = "45251312";
+    // valueObject.sessionId = "2_MX40NTI1MTMxMn5-MTQ0MDE5MTA4MzA4Nn5BTTBueXFLSEtpbUhGc3dTeHlZMy96NTh-UH4";
+    // valueObject.token = "T1==cGFydG5lcl9pZD00NTI1MTMxMiZzaWc9YzZhZTFkNzI4MDkyN2QzNzlhZGY2NmU1MDAwZWE2ZWJiOWY5MjNmMzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5USTFNVE14TW41LU1UUTBNREU1TVRBNE16QTRObjVCVFRCdWVYRkxTRXRwYlVoR2MzZFRlSGxaTXk5Nk5UaC1VSDQmY3JlYXRlX3RpbWU9MTQ0MDE5MTA5MSZub25jZT0wLjA0MzE5MjczNDg3NzM2OTYzJmV4cGlyZV90aW1lPTE0NDI3ODMwNjkmY29ubmVjdGlvbl9kYXRhPQ=="; 
+
+  </script>
+
+</head>
+
+<body onload="init()">    
+ <div id="active" >
+  <h3>Operator Page</h3>
+  <div id="txt">Waiting for setup</div>
+  <div id="button">
+    <button class="btn btn-md btn-default" id="launch" onClick="launch()">Launch</button>
+  </div>
+   
+  </div>
+
+  <script type="text/javascript">
+    function init() {
+      // $('button').prop('disabled', true);
+    }
+  </script>
+
+  <script type="text/javascript" charset="utf-8">
+        // var apiKey = valueObject.apiKey;
+        // var sessionId = valueObject.sessionId;
+        // var token = valueObject.token;
+        // session = OT.initSession(apiKey, sessionId);
+
+
+        // session.on("signal:cameraReady", function(event) {
+        //   console.log("Signal sent from connection " + event.from.id);
+        //   if (event.data == true) {
+        //     console.log("camera ready to be subscribed");
+        //     $('button').prop('disabled', false);
+        //     var txt = document.getElementById("txt");
+        //     txt.innerHTML = 'Ready for transmission. Click the <font color="blue">Launch</font> button to lauch the app to subscribed to the current camera views';
+        //   }
+        // });
+
+
+
+        // session.connect(token, function(error) {
+
+        // });
+
+        // session.on('disconnect', function() {
+        //   console.log('Connection closed');
+        // });
+   
+  </script>
+
+
+  <script>
+    function launch() {    
+          var leftCam = window.open("leftscreen.html", "_blank", "width=800, height=800");
+          leftCam.moveTo(-100, 100);
+
+          var midCam = window.open("mainscreen.html", "_blank", "width=800, height=800");
+          midCam.moveTo(300, 100);
+          
+          var rightCam = window.open("rightscreen.html", "_blank", "width=800, height=800");
+          rightCam.moveTo(800, 100);
+    }
+  </script>
+
+  
+</body>
+</html>

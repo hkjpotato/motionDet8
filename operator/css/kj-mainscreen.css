@@ -1,0 +1,146 @@
+.bg {
+  opacity: 0.6;
+  position: fixed;
+  left: 50%;
+  margin-left: -200px;
+  bottom: 1px;
+  
+  
+  border-top-left-radius: 240px;
+  border-top-right-radius: 240px;
+  border-bottom-right-radius: 70px 140px;
+  border-bottom-left-radius: 70px 140px;
+  z-index: 1500;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5); 
+  width: 400px;
+  height: 310px;
+  overflow-y: hidden; 
+/*  background-image: url("https://raw.githubusercontent.com/hkjpotato/ecekj/master/fordSpeedo1.png");*/
+/*  background-repeat: no-repeat;
+  background-position: left top;*/
+}
+
+#backimg {
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  width: 400px;
+  height: 320px;
+  border-top-radius: 400px;
+  margin-left: -200px;
+  z-index: -5;
+}
+
+
+.bg:after {
+  content: "";
+  width: 400px;
+  height: 400px;
+  position: absolute;
+  border-radius: 400px;
+  left: 0px;
+  top: 0px;
+  border: 10px solid rgba(0, 5, 30, 0.8);
+  z-index: -4;
+/*  background-color: rgba(0, 5, 40, 1);*/
+  
+}
+
+.bg:before {
+  color: rgba(249, 249, 255, 0.9);
+  /* content: attr(data-value); */
+  content:"";
+  font-family: Orbitron, Helvetica, Arial, sans-serif;
+  font-size: 3.5em;
+  line-height: 182px;
+  text-align: center;
+  width: 200px;
+  height: 200px;
+  position: absolute;
+  border-radius: 100%;
+  left: 50%;
+  margin-left: -100px;
+  /* top: 114px; center of the before is (91 - 16 = 75px) above bottom*/
+  /* bottom: -25px; */
+  top: 100px;
+  box-shadow: 0 0 18px 3px #d7daff inset;
+  background: rgba(0, 0, 0, 1);
+  z-index: 4;
+}
+
+#pointer {
+  z-index: 10;
+  background: rgba(249, 249, 255, 0.9);
+  border-radius: 16px/4px;
+  top: 204px;
+  /* bottom: 71px; */
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+  display: block;
+  left: 50%;
+  margin-left: -140px;
+  height: 8px;
+  position: absolute;
+  width: 140px;
+  transform-origin: 100% 4px;
+  z-index: 3;
+  -ms-transform: rotate(-20deg);
+  /* IE 9 */
+  
+  -webkit-transform: rotate(-20deg);
+  /* Chrome, Safari, Opera */
+  
+  transform: rotate(-20deg);
+}
+
+
+
+
+#pieChart {
+  opacity: 0.5;
+  position: absolute;
+  left: 50%;
+  margin-left: -104px;
+  top: 94px;
+  z-index: 1000;
+  /* background: red; */
+}
+
+
+
+/* update button */
+#update {
+  position: absolute;
+  top: 0;
+  width: 360px;
+  height: 60px;
+  cursor: pointer;
+}
+
+
+
+/* start with radar */
+
+    
+
+#radarChart {
+  position: absolute;
+  left: 50%;
+  margin-left: -100px;
+  top: 100px;
+  z-index: 2000;
+  /*background: rgba(255, 255, 255, 0);*/
+  width: 200px;
+  height:200px;
+  border-radius: 200px;
+}
+
+.radar-chart .area {
+  /*fill-opacity: 1;*/
+}
+
+.area.lidar, .lidar .circle {
+  /*fill-opacity: 1;*/
+  
+  fill: #FFD700;
+  stroke: none;
+}

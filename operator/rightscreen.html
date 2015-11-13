@@ -1,0 +1,453 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Right Screen</title>
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
+  <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/> -->
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+  <script src='http://static.opentok.com/webrtc/v2.2/js/opentok.min.js'></script>
+
+  <script src="https://maps.googleapis.com/maps/api/js"></script>
+
+  <link href="switch/bootstrap-switch.css" rel="stylesheet">
+  <script src="switch/bootstrap-switch.js"></script>
+
+  <!-- for all the session information -->
+  <script src="js/mytoken.js"></script>
+  
+  <script type="text/javascript">
+    // var valueObject = window.opener.valueObject;
+    var map;
+    var myLatlng;
+    var marker = null;
+    var connected = false;
+    var rightCamOn = false;
+    var powerOn = false;
+    var subscriber;
+
+    var WatchDogTimer = 0;
+
+    //for priority
+    var currentPriorityLevel = -1;
+    var currentHightLight;
+    //reset priority
+    var resetPriority;
+
+    var priorityOn = false;
+    var priorityCheck = null;
+
+  </script>
+
+
+  <style type="text/css">
+    html, body{
+      width: 100%;
+      height: 100%;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+
+    #rightCam {
+      background: url(http://placehold.it/800x600&text=Right+Camera);
+      background-repeat:no-repeat;
+      background-size: cover;
+      width: 100%;
+      height: 100%;
+      z-index:  0;
+    }
+
+
+    .table-container {
+      width: 250px;
+      position: absolute;
+      top: 10px;
+      height: 80px;
+      left: 10px;
+      background:rgba(255,255,255,0.8);
+      border-radius: 5px
+    }
+
+    .table th, td {
+      text-align: center;
+    }
+
+    #switchContainer {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      z-index: 1000;
+    }
+
+
+    #map-canvas {
+      position: absolute;
+       bottom: 10px; 
+       right: 10px; 
+
+      width: 300px;
+      height: 300px;
+      -moz-border-radius: 50%;
+      -webkit-border-radius: 50%;
+      border-radius: 50%;
+      /*box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);*/
+      border: 5px solid rgba(0, 255, 230, 0.5);
+      opacity: 0.8;
+    }
+
+    .highlight {
+      box-shadow: 0px 0px 20px rgba(255, 0, 0, 1) ;
+    }
+
+    .clickArea {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40%;
+      height: 40%;
+      margin-left: -20%;
+      margin-top: -20%;
+      z-index: 1000;
+      cursor:pointer;
+    }
+
+    #shadow {
+      position: absolute;;
+      width: 100%;
+      height: 100%;
+      z-index: 
+      left: 0;
+      top: 0;
+      z-index: 1;
+    }
+  </style>
+
+
+</head>
+
+<body>
+
+
+  <div id="container">
+
+    <!-- <div id="signal"> <div> -->
+
+    <div id="rightCam"></div>
+
+    <div class="clickArea" onclick="changeStat()"></div>
+    <div id="shadow"></div>
+
+    <div class="table-container">           
+      <table id="table" class="table table-hover ">
+        <thead>
+          <tr>
+            <th>Latency</th>
+            <th>Bandwidth</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+
+            <td></td>
+            <td></td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    
+<!--     <input id="rightSwitch" type="checkbox" class="js-switch"/>
+ -->    
+  <div id="map-canvas"></div>
+
+
+  <div id="switchContainer">
+    <input id="switch" type="checkbox" name="my-checkbox" data-label-text="Right Camera"
+    data-label-width="88px" data-on-color="success" data-off-color="danger">
+      <!-- connection signal -->
+      <span id="connectSign" class="glyphicon glyphicon-record" style="color:grey; font-size:20px"></span>
+    </input>
+  </div>
+
+  </div>
+
+  <script type="text/javascript">
+    // var elem = document.querySelector('.js-switch');
+    // var elem = document.getElementById('switch');
+    // var init = new Switchery(elem);
+
+    $("[name='my-checkbox']").bootstrapSwitch();
+ 
+
+  </script>
+
+
+
+<script>
+  //data session, FIXME, may not needed
+  dataSession = OT.initSession(apiKey , dataId);
+  // frontSession = OT.initSession(apiKey, frontId);
+  // rearSession = OT.initSession(apiKey, rearId);
+  // leftSession = OT.initSession(apiKey, leftId);
+  session = OT.initSession(apiKey, rightId);
+
+  //start subscribing
+  session.on('streamCreated', function(event) {
+    rightCamOn = true;
+    subscriber = session.subscribe(event.stream, 'rightCam', {width: "100%", height: "100%" , style: {buttonDisplayMode: "off", nameDisplayMode:"off"}});
+    
+    console.log(event.stream.name + "stream noticed!!!!!!!!!");
+
+    if ($("#switch").bootstrapSwitch('state') == false ) {
+      $("#switch").bootstrapSwitch('state', true, true);
+    }
+
+  });
+
+  session.on("streamDestroyed", function (event) {
+    event.preventDefault();
+    rightCamOn = false;
+    if ($("#switch").bootstrapSwitch('state') == true ) {
+      $("#switch").bootstrapSwitch('state', false, true);
+    }
+  });
+
+  //check for connecting status!!
+  var iFrequency = 5000; // expressed in miliseconds
+  var myInterval = 0;
+  // console.log("before Start loop");
+  startLoop();
+  // STARTS and Resets the loop if any
+  function startLoop() {
+    // console.log("Reached Start loop");
+    WatchDogTimer = 0;
+    // console.log(WatchDogTimer);
+    if(myInterval > 0) clearInterval(myInterval);  // stop
+    myInterval = setInterval( function(){
+     if(WatchDogTimer===0){
+        //if green, turn red
+        console.log("no cameraReady signal!");
+        if (connected) {
+          $("#connectSign").css({"color":"grey"});
+          connected = false;
+        }
+      }
+    WatchDogTimer = 0;
+    }, iFrequency );  // run
+  }
+
+  //TEMPORY VERSION
+  session.on("signal:cr", function(event) {
+   WatchDogTimer = 1;
+   if(!connected){
+      //turn green
+      $("#connectSign").css({"color":"#00FF00"});
+      connected = true;
+    }
+  });
+
+  dataSession.on("signal:priority", function(event) {
+    console.log("Signal sent from connection " + event);
+    // for ssim detection
+    var data = event.data;
+    if (data.cameraView == "Right") {
+      if(rightCamOn) {
+        if (!priorityOn) {
+
+          if (priorityCheck != null) {
+            clearTimeout(priorityCheck);
+            priorityCheck = null;
+          }
+          
+          document.getElementById("shadow").style.boxShadow = "0px 0px 50px red inset";
+          priorityOn = true;
+          priorityCheck = setTimeout(function() {
+            document.getElementById("shadow").style.boxShadow = null;
+            priorityOn = false;
+          }, 7000);
+        }
+      }
+    } else {
+      if (data == "rightOn") {
+        document.getElementById("shadow").style.boxShadow = "0px 0px 50px red inset";
+      } else if (data == "rightOff") {
+        document.getElementById("shadow").style.boxShadow = null;
+      } else if (data == "mapOn") {
+        $("#map-canvas").addClass('highlight');
+      } else if (data == "mapOff") {
+        $("#map-canvas").removeClass('highlight');
+      } else if (data == "tableOn") {
+        $(".table-container").addClass('highlight');
+      } else if (data == "tableOff") {
+        $(".table-container").removeClass('highlight');
+      }
+    }
+  });
+
+  dataSession.on("signal:gpsData", function(event) {
+    // console.log(event.data.lat + " " + event.data.lng);
+
+    document.getElementById("table").rows[1].cells[0].innerHTML = event.data.lat;
+    document.getElementById("table").rows[1].cells[1].innerHTML = event.data.lng;
+
+
+    if (!map) {
+      console.log("map is not ready!");
+    } else {
+      myLatlng = new google.maps.LatLng(event.data.lat, event.data.lng);
+      // myLatlng = new google.maps.LatLng(33.769058, -84.391386);
+      if (!marker) {
+        marker = new google.maps.Marker({
+            position: myLatlng,
+            map: map,
+            icon: markerIcon()
+        });
+        console.log("marker created!");
+      } else {
+        marker.setPosition(myLatlng);
+        console.log("position updated!");
+        map.setCenter(myLatlng);      
+      }
+
+      if (!map.getBounds().contains(myLatlng)) {
+        map.setCenter(myLatlng);
+      }
+    }
+  });
+
+  function markerIcon() {
+    return {
+      url: 'car.png',
+      size: new google.maps.Size(60, 84),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(30, 84)
+    }
+  } 
+
+
+  // session.connect(token);
+  dataSession.connect(dataToken);
+  session.connect(rightToken);
+</script>
+<script type="text/javascript">
+  function initialize() {
+    console.log("Initializing the Map");
+      var styles = [
+      {
+        stylers: [
+          { hue: "#00ffe6" },
+          { saturation: -20 }
+        ]
+      },{
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [
+          { lightness: 100 },
+          { visibility: "simplified" }
+        ]
+      },{
+        featureType: "road",
+        elementType: "labels",
+        stylers: [
+          { visibility: "off" }
+        ]
+      }
+    ];
+    // Create a new StyledMapType object, passing it the array of styles,
+    // as well as the name to be displayed on the map type control.
+    var styledMap = new google.maps.StyledMapType(styles,
+    {name: "Styled Map"});
+
+    // Create a map object, and include the MapTypeId to add
+    // to the map type control.
+
+    
+    myLatlng = new google.maps.LatLng(33.769058, -84.391386);
+    var mapCanvas = document.getElementById('map-canvas');
+    var mapOptions = {
+      draggable: false,
+      zoomControl: false,
+      scrollwheel:false,
+      disableDoubleClickZoom: true,
+      disableDefaultUI: true,
+      center: myLatlng,
+      zoom: 16,
+      mapTypeControlOptions: {
+        mapTypeIds: [google.maps.MapTypeId.ROADMAP, 'map_style']
+      }
+    }
+
+    map = new google.maps.Map(mapCanvas, mapOptions); 
+
+    map.mapTypes.set('map_style', styledMap);
+    map.setMapTypeId('map_style');
+    
+    console.log("map created!");
+
+
+  }    
+  google.maps.event.addDomListener(window, 'load', initialize);
+
+
+  
+</script>
+
+<script type="text/javascript">
+
+  $("#switch").on('switchChange.bootstrapSwitch', function(event, state) {
+    // changeStat1();
+    camStat('Right', state);
+  });
+
+  function changeStat() {
+    $("#switch").bootstrapSwitch('toggleState');
+  }
+
+
+  function camStat(camId, state) {
+    var command;
+    if (state) {
+      command = "start".concat(camId);
+      console.log("starting " + camId + " camera...");
+    } else {
+      command = "stop".concat(camId);
+      console.log("stopping " + camId + " camera...");
+    }
+
+      session.signal(
+        {
+        // to: connections[num];
+          data: command,
+          type: "ViewControl"
+        },
+        function(error) {
+         if (error) {
+            console.log("signal error ("
+                        + error.code
+                        + "): " + error.message);
+          } else {
+             console.log("signal sent.");
+          } 
+        }                      
+      );
+  }
+
+</script>
+
+
+
+
+</body>
+</html>

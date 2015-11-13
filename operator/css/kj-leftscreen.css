@@ -1,0 +1,65 @@
+#keySection {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 1000;
+  
+}
+
+/*#keySection:hover .entry {
+  width: 250px;
+}*/
+
+#keySection:hover #startIcon:after {
+  visibility: visible;
+}
+
+
+#startIcon {
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 0, 0, 1);
+  border-radius:100px;
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+  /*z-index: 1000;*/
+
+}
+
+#startIcon:after {
+  content:"";
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  background-color: rgba(125, 125, 125, 0.3);
+  left: -10px;
+  top: -10px;
+  border-radius: 120px;
+  z-index: 5;
+  visibility: hidden;
+  overflow:hidden;
+
+}
+
+
+
+.entry {
+  position: absolute;
+  top: 30px;
+  height: 50px;
+  left: 115px;
+  width: 0px;
+  overflow:hidden;
+  border-radius: 5px;  
+  background-color: rgba(125, 125, 125, 0.3);
+   -webkit-transition: all 0.5s;
+  transition: all 0.5s;
+
+}
+
+.input-group {
+  position: absolute;
+  top: 8px;
+  left:20px;
+  width: 210px;
+}
+

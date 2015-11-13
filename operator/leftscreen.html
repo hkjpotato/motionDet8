@@ -1,0 +1,612 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Left Screen</title>
+  <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css"/>
+    <!-- <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/> -->
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
+  <script src='http://static.opentok.com/webrtc/v2.2/js/opentok.min.js'></script>
+
+  
+  <link rel="stylesheet" type="text/css" href="css/style.css"/>
+
+
+
+<!-- <link href="bootstrap.css" rel="stylesheet"> -->
+<link href="switch/bootstrap-switch.css" rel="stylesheet">
+<!-- <script src="jquery.js"></script> -->
+<script src="switch/bootstrap-switch.js"></script>
+<link rel="stylesheet" type="text/css" href="css/kj-leftscreen.css"/>
+
+
+<!-- for all the session information -->
+<script src="js/mytoken.js"></script>
+
+  <script type="text/javascript">
+    //   <link rel="stylesheet" href="dist/switchery.css" />
+    // <script src="dist/switchery.js">
+    // var valueObject = window.opener.valueObject;
+    var leftCamOn = false;
+    var controlVideoOn = false;
+    var subscriber;
+    var powerOn = false;
+    var connected = false;
+
+    var audioSubscriber;
+    var audioPublisher;
+
+    var myIgnitionPassword="1234";
+    var WatchDogTimer = 0;
+
+    //for priority
+    var currentPriorityLevel = -1;
+    var currentHightLight;
+    //reset priority
+    var resetPriority;
+
+
+    var priorityOn = false;
+    var priorityCheck = null;
+
+  </script>
+
+
+  <style type="text/css">
+    html, body{
+      width: 100%;
+      height: 100%;
+    }
+
+    #container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+    }
+
+    #cartAudio {
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     height: 50px;
+     width: 50px;
+     z-index: -2;
+    }
+
+    #controlAudio {
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     height: 50px;
+     width: 50px;
+     z-index: -2;
+    }
+
+    #leftCam {
+      background: url(http://placehold.it/800x600&text=Left+Camera);
+      background-repeat:no-repeat;
+      background-size: cover;
+      width: 100%;
+      height: 100%;
+      z-index:  0;
+    }
+
+    #soundCtrl {
+      overflow: hidden;
+      background: rgba(0, 159, 60, 0.6);
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 60px;
+      height: 60px;
+      z-index: 1000;
+      border-radius: 16px;
+
+      -webkit-transition: all 0.2s ease;
+      -moz-transition: all 0.2s ease;
+      -o-transition: all 0.2s ease;
+      transition: all 0.2s ease;
+
+    }
+
+    #soundCtrl:hover {
+      width: 210px;
+      height: 130px;
+      border-radius: 5px;
+    }
+
+    #soundCtrl:hover #soundIcon {
+      visibility: hidden;
+    }
+
+    #soundCtrl:hover #soundSwitchGp {
+      height: 120px;
+      width: 200px;
+      bottom: 5px;
+      left:  5px;
+      border-radius: 2px;
+      z-index: 1001;
+      background:rgba(255,255,255,0.5);
+      opacity: 1;
+    }
+
+    #soundIcon {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    #switchContainer {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      z-index: 1000;
+    }
+
+    #soundSwitchGp {
+      overflow: hidden;
+      position: absolute;
+      opacity: 0;
+      left: 0;
+      bottom: 0;
+      width: 60px;
+      height: 60px;
+      z-index: -5;
+      border-radius: 16px;
+    }
+
+    #soundSwitch1 {
+      position: absolute;
+      left:50%;
+      margin-left: -87px;
+      top: 6px;
+
+    }
+    #soundSwitch2 {
+      position: absolute;
+      left:50%;
+      margin-left: -87px;
+      top: 46px;
+    }
+
+
+    .clickArea {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 40%;
+      height: 40%;
+      margin-left: -20%;
+      margin-top: -20%;
+      z-index: 1000;
+      cursor:pointer;
+    }
+
+    #shadow {
+      position: absolute;;
+      width: 100%;
+      height: 100%;
+      z-index: 
+      left: 0;
+      top: 0;
+      z-index: 1;
+    }
+
+
+    h4 {
+      position: absolute;
+      bottom: 3px;
+      margin-left: -60px;
+      left: 50%;
+      color: rgba(0, 159, 60, 0.6);
+/*      -webkit-transition: all 2s ease;
+      -moz-transition: all 2s ease;
+      -o-transition: all 2s ease;
+      transition: all 2s ease;*/
+    }
+
+  </style>
+</head>
+
+
+
+<body>
+
+  <div id="container">
+    <div id="leftCam" ></div>
+
+    <div class="clickArea" onclick="changeStat()"></div>
+    <div id="shadow"></div>
+    
+
+    <div id="cartAudio"></div>
+    <div id="controlAudio"></div>
+
+
+<div id="keySection">
+  <div id="startIcon">
+    <img id="startIcon-img" src="startIcon.png
+" />
+  </div>
+
+
+  <div class="entry">
+
+    <div class="input-group">
+      <input id="inputKey" type="text" class="form-control" placeholder="Input Key Here...">
+      <span class="input-group-btn">
+          <button id="power"class="btn btn-danger" type="button" onClick="power()">Power</button>
+      </span>
+    </div>
+
+  </div>
+
+
+</div>
+
+
+  <div id="soundCtrl">  
+      <img id="soundIcon" src="soundIcon.png"/>
+
+      <div id="soundSwitchGp">
+
+        <div id="soundSwitch1">
+          <input class="soundSwitch" id="cartSwitch" type="checkbox" name="my-checkbox" data-label-text="Cart Audio"  onchange="cartAudioStat()" checked data-label-width="98px" data-on-color="success" data-off-color="warning" >
+        </div>
+        <div id="soundSwitch2">
+          <input class="soundSwitch" id="operatorSwitch" type="checkbox" name="my-checkbox" data-label-text="Operator Audio" onchange="operatorAudioStat()" data-label-width="98px" data-on-color="success" data-off-color="warning"  >
+        </div>
+
+
+          <h4>Sound Control</h4>
+      </div> 
+  </div>
+
+
+  <div id="switchContainer">
+
+
+    <input id="switch" type="checkbox" name="my-checkbox" data-label-text="Left Camera"  data-label-width="88px" data-on-color="success" data-off-color="danger"> 
+      <!-- connection signal -->
+      <span id="connectSign" class="glyphicon glyphicon-record" style="color:grey; font-size:20px"></span>
+    </input>
+  </div>
+
+  </div>
+
+ <script>
+
+  $("[name='my-checkbox']").bootstrapSwitch();
+
+  $("#inputKey").keypress(function(e) {
+    if(e.which == 13) {
+        // alert('You pressed enter!');
+        power();
+    }
+  });
+
+
+  $("#keySection").hover(
+    function(){
+      if (!powerOn) {
+        $('#inputKey').val('');
+        $(".entry").css( "width", "250px");
+      }
+    }, 
+    function(){
+      $(".entry").css( "width", "0px");
+    });
+
+
+  $('#keySection').click(
+    function() {
+      if (powerOn) {
+             powerOn = false;
+             $('#startIcon').css({
+               "box-shadow": "0 0 10px rgba(255,0,0,0.8)",
+               "background-color": "rgba(255,0,0,1)"
+             });
+            $('#inputKey').val('');
+            console.log("power off!");
+
+      }
+    }
+    );
+
+ </script>
+
+
+<script>
+  //data session, FIXME, may not needed
+  dataSession = OT.initSession(apiKey , dataId);
+  // frontSession = OT.initSession(apiKey, frontId);
+  // rearSession = OT.initSession(apiKey, rearId);
+  session = OT.initSession(apiKey, leftId);
+  // rightSession = OT.initSession(apiKey, rightId);
+
+  //start subscribing
+  dataSession.on('streamCreated', function(event) {
+    if (event.stream.name == "Cart Audio") {
+      audioSubscriber = dataSession.subscribe(event.stream, 'cartAudio');
+      document.getElementById("cartAudio").style.visibility="hidden";
+    }
+  });
+
+  //start subscribing
+  session.on('streamCreated', function(event) {
+    leftCamOn = true;
+    subscriber = session.subscribe(event.stream, 'leftCam', {width: "100%", height: "100%" , style: {buttonDisplayMode: "off", nameDisplayMode:"off"}});
+    
+    console.log(event.stream.name + "stream noticed!!!!!!!!!");
+
+    if ($("#switch").bootstrapSwitch('state') == false ) {
+      $("#switch").bootstrapSwitch('state', true, true);
+    }
+
+    
+  });
+
+  session.on("streamDestroyed", function (event) {
+    event.preventDefault();
+    leftCamOn = false;
+
+    if ($("#switch").bootstrapSwitch('state') == true ) {
+      $("#switch").bootstrapSwitch('state', false, true);
+    }
+  });
+
+  // //FIXME on connectivity!!!!!
+  // session.on("signal:cr", function(event) {
+  //   console.log("Signal sent from connection " + event.from.id);
+  //   if (event.data == true) {
+  //     console.log("camera ready to be subscribed. Input the correct key to start controlling!");
+  //     $('#checkKeyBtn').prop('disabled', false);
+  //     $('#inputKey').prop('disabled', false);
+  //   }
+  // });
+
+  //check for connecting status!!
+  var iFrequency = 5000; // expressed in miliseconds
+  var myInterval = 0;
+  // console.log("before Start loop");
+  startLoop();
+  function startLoop() {
+    WatchDogTimer = 0;
+    // console.log(WatchDogTimer);
+    if(myInterval > 0) clearInterval(myInterval);  // stop
+    myInterval = setInterval( function() {
+      if(WatchDogTimer===0){
+        if (connected) {
+          $("#connectSign").css({"color":"grey"});
+          connected = false;
+        }
+      }
+      WatchDogTimer = 0;
+
+    }, iFrequency );  // run
+  }
+
+  //TEMPORY VERSION
+  session.on("signal:cr", function(event) {
+    WatchDogTimer = 1;
+    if(!connected){
+      //turn green
+      $("#connectSign").css({"color":"#00FF00"});
+      connected = true;
+    }
+  });  
+
+  dataSession.on("signal:priority", function(event) {
+    //for ssim detection
+    var data = event.data;
+    if (data.cameraView == "Left") {
+      if(leftCamOn) {
+        if (!priorityOn) {
+          
+          if (priorityCheck != null) {
+            clearTimeout(priorityCheck);
+            priorityCheck = null;
+          }
+          
+          document.getElementById("shadow").style.boxShadow = "0px 0px 50px red inset";
+          priorityOn = true;
+          priorityCheck = setTimeout(function() {
+            document.getElementById("shadow").style.boxShadow = null;
+            priorityOn = false;
+          }, 7000);
+        }
+      }
+    } else {
+      if (data == "leftOn") {
+      document.getElementById("shadow").style.boxShadow = "0px 0px 50px red inset";
+
+      } else if (data == "leftOff") {
+      document.getElementById("shadow").style.boxShadow = null;
+      }
+    }
+    // var data = event.data;
+    // if (data.priorityLevel) {
+    //   //update when a larger level is found
+    //   var newPriorityLevel = data.priorityLevel;
+    //   if (newPriorityLevel > currentPriorityLevel) {
+    //     currentPriorityLevel = newPriorityLevel;
+    //     currentHightLight = data.cameraView;
+    //     //if it is me, hightlight myself
+    //     if (currentHightLight == "Left") {
+    //       if (leftCamOn) {
+    //         document.getElementById("shadow").style.boxShadow = "0px 0px 50px red inset";
+    //       }
+    //     } else {
+    //       document.getElementById("shadow").style.boxShadow = null;
+    //     }
+
+    //     if (resetPriority) {
+    //       clearTimeout(resetPriority);
+    //     }
+
+    //     resetPriority = setTimeout(function() {
+    //       document.getElementById("shadow").style.boxShadow = null;
+    //       currentPriorityLevel = -1;
+    //     }, 5000);
+    //   } else {
+    //     console.log("not larger than the current one");
+    //   }
+
+      //another choice
+      //not myself
+      // var myView = "Left";
+      // var newView = data.cameraView;
+      // var newLevel = data.priorityLevel;
+
+      // if (newLevel > currentLevel) {
+      //   currentLevel = newLevel;
+      // }
+
+      // if (newView == myView) {
+      //   if (leftCamOn) {
+      //     document.getElementById("shadow").style.boxShadow = "0px 0px 50px red inset";
+
+
+
+
+      //   }
+      // } else if (priorityOn && (newView != myView) && (newLevel > currentLevel)) {
+      //     document.getElementById("shadow").style.boxShadow = null;
+      //     if (resetPriority) {
+      //       clearTimeout(resetPriority);
+      //     }
+      // } 
+    // }
+  });
+
+
+  //start connecting
+  dataSession.connect(dataToken, function(error) {
+    audioPublisher = OT.initPublisher('controlAudio', {name: 'Control Audio', videoSource:null}, function(error) {
+      console.log("Control Audio ready to be published!"); 
+      document.getElementById("cartAudio").style.visibility="hidden";
+    });
+  });
+  
+  session.connect(leftToken);
+
+</script>
+
+<script type="text/javascript">
+
+ function power() {
+   if (!powerOn) {
+    var inputKey = document.getElementById("inputKey").value;
+    console.log("the input key is " + inputKey);
+    var myIgnitionPassword="1234";
+    
+    if (inputKey == myIgnitionPassword) {
+       powerOn = true;
+       $('#startIcon').css({
+         "box-shadow": "0 0 10px rgba(0,255,0,0.8)",
+         "background-color": "rgba(0,255,0,1)"
+       });
+
+       //slide back the entry area
+      $(".entry").css( "width", "0px");
+
+      dataSession.signal({
+          data: true,
+          type: "power"
+        },
+        function(error) {
+          if (error) {
+            console.log("signal error (" + error.code + "): " + error.message);
+          } else {
+            // $(".entry").css( "width", "0px");
+          }
+        }
+      );
+
+    } else {
+       alert("The input key is wrong!");
+    }
+   } else {
+    //powerOn --should turn off the power 
+    //FIXME
+   } 
+ }
+
+
+  function cartAudioStat() {
+    if (document.getElementById("cartSwitch").checked) {
+      audioSubscriber.subscribeToAudio(true);
+    } else {
+      audioSubscriber.subscribeToAudio(false);
+    }
+  }
+
+
+  function operatorAudioStat() {
+    if (document.getElementById("operatorSwitch").checked) {
+      dataSession.publish(audioPublisher).on("streamDestroyed", function(event) {
+                  event.preventDefault();
+                  console.log("stop stream of control video");
+                });
+    } else {
+      dataSession.unpublish(audioPublisher);
+    }
+  }
+
+
+</script>
+
+
+<script type="text/javascript">
+
+  $("#switch").on('switchChange.bootstrapSwitch', function(event, state) {
+    // changeStat1();
+    camStat('Left', state);
+  });
+
+  function changeStat() {
+    $("#switch").bootstrapSwitch('toggleState');
+  }
+
+
+  function camStat(camId, state) {
+    var command;
+    if (state) {
+      command = "start".concat(camId);
+      console.log("starting " + camId + " camera...");
+    } else {
+      command = "stop".concat(camId);
+      console.log("stopping " + camId + " camera...");
+    }
+
+      session.signal(
+        {
+        // to: connections[num];
+          data: command,
+          type: "ViewControl"
+        },
+        function(error) {
+         if (error) {
+            console.log("signal error ("
+                        + error.code
+                        + "): " + error.message);
+          } else {
+             console.log("signal sent.");
+          } 
+        }                      
+      );
+  }
+</script>
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>  
+  <script src="https://static.opentok.com/v2/js/opentok.min.js"></script>  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+
+
+  <!-- not working -->
+  <script src="/socket.io/socket.io.js"></script>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
+
+  <style type="text/css">
+    #linkSection {
+      position: absolute;
+      /*margin-top: 100px;*/
+    }
+</style>
+
+
+  <style>
+    .audioSection {
+      position:absolute;
+    }
+
+    #cart {
+      position: absolute;
+      left: 20px;
+      top : 380px;
+    }
+
+    #control {
+      position: absolute;
+      left: 300px;
+      top: 380px;
+    }
+  </style>
+
+
+ <script type="text/javascript">
+    //update when input key is correct
+    var powerOn = false;
+
+    //orginal session for camera control
+    var session;
+
+    //additional session for data sharing
+    var dataSession;
+
+    //GPSdata
+    var sendingGPS = null;
+    var currLocation = {};
+
+    //for demo
+    var GPStableLat = [
+    33.769058,
+    33.769093,
+    33.768935,
+    33.768906,
+    33.768889,
+    33.768966,
+    33.770708,
+    33.771086,
+    33.771807,
+    33.77188,
+    33.771914,
+    33.771955,
+    33.772023,
+    33.772058,
+    33.772048,
+    33.771849];
+
+    var GPStableLng = [
+    -84.391386,
+    -84.391389,
+    -84.391696,
+    -84.391809,
+    -84.391917,
+    -84.392037,
+    -84.392109,
+    -84.392121,
+    -84.392088,
+    -84.391938,
+    -84.391901,
+    -84.391912,
+    -84.391925,
+    -84.391873,
+    -84.391846,
+    -84.3919
+    ];
+  </script>
+</head>
+
+
+<body>
+
+<p id="txt">Check the permission of cameras first before you go to the seperate link</p>
+
+<div id="audioSection" >
+  <div id="cart">
+    <p>Cart Audio</p>
+    <div id="cartAudio"></div>
+  </div>
+
+  <div id="control">
+    <p>Operator Audio</p>
+    <div id="controlAudio"></div>
+  </div>
+</div>   
+
+<div id="linkSection">
+  <!-- for version 8 -->
+  <p><a href="https://dl.dropbox.com/s/0ky6ak4z3swwxqj/1stCamera.html?dl=0">First Camera</a></p>
+  <p><a href="https://dl.dropbox.com/s/hd6fh5whuyphozw/2ndCamera.html?dl=0">Second Camera</a></p>
+  <p><a href="https://dl.dropbox.com/s/fjx377eolefn6b8/3rdCamera.html?dl=0">Third Camera</a></p>
+  <p><a href="https://dl.dropbox.com/s/8vgzwnahti1epnd/4thCamera.html?dl=0">Forth Camera</a></p>
+</div>
+
+
+<script type="text/javascript">
+
+  var apiKey = "45251312";
+
+  var frontId = "2_MX40NTI1MTMxMn5-MTQ0MzM3NTU5NDgxOX4xNXYzTXQ3SERSZkk0bXM3UEl4cUVxbXN-UH4";
+  var frontToken = "T1==cGFydG5lcl9pZD00NTI1MTMxMiZzaWc9YjAzZTVmN2QyNDI0ZDIyZWRhOWMxNzU1MDM2ZDcyMmM2ODBmMjUwMjpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5USTFNVE14TW41LU1UUTBNek0zTlRVNU5EZ3hPWDR4TlhZelRYUTNTRVJTWmtrMGJYTTNVRWw0Y1VWeGJYTi1VSDQmY3JlYXRlX3RpbWU9MTQ0NjA2OTUyMSZub25jZT0wLjY2MTc4MzM2MTU3Mjc0OTgmZXhwaXJlX3RpbWU9MTQ0ODY2MTMxNCZjb25uZWN0aW9uX2RhdGE9";
+
+  var rearId = "1_MX40NTI1MTMxMn5-MTQ0MzM3NTY4OTQ4N35PNnpXREdtWnRIcEJiTnhmc2dpbmh5VWF-UH4";
+  var rearToken = "T1==cGFydG5lcl9pZD00NTI1MTMxMiZzaWc9ZjMyMzYyYWEyMGE5OWJjMzUzYTBkMjAxNGZlMmFmMDRmZDE3NGQyMzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USTFNVE14TW41LU1UUTBNek0zTlRZNE9UUTROMzVQTm5wWFJFZHRXblJJY0VKaVRuaG1jMmRwYm1oNVZXRi1VSDQmY3JlYXRlX3RpbWU9MTQ0NjA2OTU2MSZub25jZT0wLjUxNzQwNDE1NzY3NTE0OTEmZXhwaXJlX3RpbWU9MTQ0ODY2MTMxNCZjb25uZWN0aW9uX2RhdGE9";
+
+  var leftId = "1_MX40NTI1MTMxMn5-MTQ0MzM3NTc0MjEzNH5TSkRPOWwzcDhwcGVUajZNNWNWTFJPckh-UH4";
+  var leftToken = "T1==cGFydG5lcl9pZD00NTI1MTMxMiZzaWc9NDI3ZGIwODRmODlhOTc0MDViZjZhZDkwOWQ5NjY3NmM5ZmQwM2QyNTpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTFfTVg0ME5USTFNVE14TW41LU1UUTBNek0zTlRjME1qRXpOSDVUU2tSUE9Xd3pjRGh3Y0dWVWFqWk5OV05XVEZKUGNraC1VSDQmY3JlYXRlX3RpbWU9MTQ0NjA2OTU4NiZub25jZT0wLjI2MDAxMjAzODM4MjMwMzcmZXhwaXJlX3RpbWU9MTQ0ODY2MTMxNCZjb25uZWN0aW9uX2RhdGE9";
+
+  var rightId = "2_MX40NTI1MTMxMn5-MTQ0MzM3NTc2ODM1Nn5sb25wYUlTU0s2bDF4SmtVb2VKQkwvTmh-UH4";
+  var rightToken = "T1==cGFydG5lcl9pZD00NTI1MTMxMiZzaWc9YWE0ZTI1YjhmNDU5MDcwYTc5ZDY1MGFjYzIzMzQ5NDA3NzllZjNkYzpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5USTFNVE14TW41LU1UUTBNek0zTlRjMk9ETTFObjVzYjI1d1lVbFRVMHMyYkRGNFNtdFZiMlZLUWt3dlRtaC1VSDQmY3JlYXRlX3RpbWU9MTQ0NjA2OTYyNiZub25jZT0wLjEwMDI4MjkzOTM1MzM4NTcyJmV4cGlyZV90aW1lPTE0NDg2NjEzMTQmY29ubmVjdGlvbl9kYXRhPQ==";
+
+
+  var dataId = "2_MX40NTI1MTMxMn5-MTQ0MzM3NTc4NzUzOX44dHp2NXhkRCs1VlBZWTZtZExPL3JTcU1-UH4";
+  var dataToken = "T1==cGFydG5lcl9pZD00NTI1MTMxMiZzaWc9NzA2MzBmYjE3ZmE4ZDVlZmZjYmYwODE5MzZhYmJiYTQxYzZhZDYzMDpyb2xlPXB1Ymxpc2hlciZzZXNzaW9uX2lkPTJfTVg0ME5USTFNVE14TW41LU1UUTBNek0zTlRjNE56VXpPWDQ0ZEhwMk5YaGtSQ3MxVmxCWldUWnRaRXhQTDNKVGNVMS1VSDQmY3JlYXRlX3RpbWU9MTQ0NjA2OTY2MSZub25jZT0wLjIwMzMxODI4MjcwNzE2ODc4JmV4cGlyZV90aW1lPTE0NDg2NjEzMTQmY29ubmVjdGlvbl9kYXRhPQ==";
+
+  //for data sharing
+  dataSession = OT.initSession(apiKey , dataId);
+
+  dataSession.on("signal:power", function(event) {
+    console.log("Signal sent from connection " + event.from.id);
+      if (event.data == true) {
+        if (!powerOn) {
+          powerOn = true;
+          console.log("Power On!");
+        } 
+      } else if (event.data == false) {
+        if (powerOn) {
+          powerOn = false;
+          console.log("Power Off!");
+        } 
+      }
+    });
+
+
+  //GET the Audio & Video Devices
+  var audioInputDevices;
+  var videoInputDevices;
+
+
+    //check for the operator's audio
+    dataSession.on('streamCreated', function(event) {
+      if (event.stream.name == "Control Audio") {
+        controlAudio = dataSession.subscribe(event.stream, 'controlAudio', function(error) {
+          console.log("control audio created!");
+        });
+      }
+    });
+
+    dataSession.on("streamDestroyed", function (event) {
+      event.preventDefault();
+      if (event.stream.name == "Control Audio") {
+        console.log("control audio destroyed!");
+      }
+    });
+
+    //connect to the data session
+    dataSession.connect(dataToken, function(error) {
+      cartAudio = OT.initPublisher('cartAudio', {videoSource: null,name:'Cart Audio'},function(error) {
+        dataSession.publish(cartAudio); //Default publish the audio into the session
+      });          
+    });
+</script>
+
+<script type="text/javascript">
+  dataSession.on("signal:power", function(event) { 
+  if (event.data == true) {
+    console.log("Signal sent from connection " + event.from.id);
+    if (!sendingGPS) {
+      sendingGPS = setInterval(function() {
+        var currentLat = GPStableLat.shift();
+        GPStableLat.push(currentLat);
+        var currentLng = GPStableLng.shift();
+        GPStableLng.push(currentLng);
+        var currentLocation = {
+          lat: currentLat,
+          lng: currentLng
+        };
+        dataSession.signal(
+          {
+            data: currentLocation,
+            type: "gpsData"
+          },
+
+          function(error) {
+             if (error) {
+                console.log("signal error ("
+                            + error.code
+                            + "): " + error.message);
+            } else {
+                console.log("sending current location " + currentLat + " " + currentLng);
+            } 
+          }                      
+        );
+
+      }, 1000);
+    }
+  }       
+});
+
+// For testing the motion detetction function 
+var test = 0;
+setInterval(function() {
+        var CartSpeed=((test++)%5);
+        dataSession.signal(
+          {
+            data: CartSpeed,
+            type: "cartSpeed"
+          },
+
+          function(error) {
+             if (error) {
+                console.log("signal error ("
+                            + error.code
+                            + "): " + error.message);
+            } else {
+                console.log("sending cart speed " + CartSpeed );
+            } 
+          }                      
+        );
+  
+}, 1000);
+</script>
+
+<script type="text/javascript">
+//Not very sure about the function 
+
+// //for demo purpose
+// //for LiData
+// setInterval(function() {
+//   var liData = {
+//     distance: Math.floor((Math.random() * 100 + 1)),
+//     degree: Math.floor((Math.random() * 360 + 1))
+//   };
+//   dataSession.signal(
+//     {
+//       data: liData,
+//       type: "liData"
+//     },
+
+//     function(error) {
+//        if (error) {
+//           console.log("signal error ("
+//                       + error.code
+//                       + "): " + error.message);
+//       } else {
+//           console.log("sending current liData " + liData.distance + " " + liData.degree);
+//       } 
+//     }                      
+//   );  
+// }, 1000);
+
+
+  var Steering = 0;
+  var AccelInput = 0.1;
+  var BrakeInput = 0.1;
+  var FWD=0;
+  var REV=0;
+  var EMG=0;
+  var STR=0;
+
+  var socket = io();
+
+  var preSteering = 0;
+  var preAccelInput=0;
+  var preBrakeInput=0;
+  var preFWD=0;
+  var preREV=0;
+  var preEMG=0;
+  var preSTR=0;
+
+  dataSession.on("signal", function(event) {
+
+    /////////////////////////////////////////////////Connection test
+
+    
+
+        if(event.type==="signal:ConnRanNum"){ 
+
+            ConnRanNum = event.data;
+
+                socket.emit('ConnRanNum', ConnRanNum);
+
+        }
+
+  /////////////////////////////////////////////////Connection test
+
+    
+      // Steering
+      
+      if(event.type==="signal:Steering"){ 
+
+        Steering = event.data;
+        if (preSteering==Steering){
+        } else {
+          socket.emit('Steering', Steering);
+          preSteering=Steering;
+        }
+      }
+      
+      // Acceleration
+      
+      if(event.type==="signal:AccelInput"){
+
+        AccelInput = event.data;
+        if (preAccelInput==AccelInput){
+        } else {
+
+          socket.emit('AccelInput', AccelInput);
+          preAccelInput=AccelInput;
+
+        }
+      } 
+      // Brake
+      
+      if(event.type==="signal:BrakeInput"){
+
+        BrakeInput = event.data;
+        if (preBrakeInput==BrakeInput){
+        } else {
+
+          socket.emit('BrakeInput', BrakeInput);
+          preBrakeInput=BrakeInput;
+
+        }
+      } 
+
+      // Forward (Button)
+      
+      if(event.type==="signal:FWD"){
+
+        FWD = event.data;
+        if (preFWD==FWD){
+        } else {
+
+          socket.emit('FWD', FWD);
+          preFWD=FWD;
+
+        }
+      } 
+      
+      // Reverse (Button)
+      
+      if(event.type==="signal:REV"){
+
+        REV = event.data;
+        if (preREV==REV){
+        } else {
+
+          socket.emit('REV', REV);
+          preREV=REV;
+
+        }
+      }     
+
+      // Emergency (Button)
+      
+      if(event.type==="signal:EMG"){
+
+        EMG = event.data;
+        if (preEMG==EMG){
+        } else {
+
+          socket.emit('EMG', EMG);
+          preEMG=EMG;
+
+        }
+      } 
+
+      // Start (Button)
+      
+      if(event.type==="signal:STR"){
+
+        STR = event.data;
+        if (preSTR==STR){
+        } else {
+
+          socket.emit('STR', STR);
+          preSTR=STR;
+
+        }
+      } 
+
+    });
+
+ /////////////////////////////////////////////receive values from control arduino/////////////////////////////////////////////
+
+ 
+
+   var SteeringAngle=0;
+
+   var SteeringDirection=0;
+
+ 
+
+    socket.on('SteeringAngle', function (data) { //receive steering angle from cart and store data
+
+          SteeringAngle=data;
+
+    });
+
+    socket.on('SteeringDirection', function (data) { //receive steering direction from cart and store data
+
+      SteeringDirection=data;
+
+      //var x = document.getElementById("txt");
+
+            //x.innerHTML = "receiving values: angle "+SteeringAngle+" direction "+SteeringDirection;
+
+    });
+
+    
+
+ /////////////////////////////////////////////END - receive values from control arduino/////////////////////////////////////////////  
+
+ 
+
+  /////////////////////////////////////////////receive values from sensor arduino & GPS/////////////////////////////////////////////
+
+  
+
+    var CartSpeed=0;
+
+  
+
+    socket.on('CartSpeed', function (data) { //receive steering angle from cart and store data
+
+          CartSpeed=data;
+
+          dataSession.signal(
+            {
+              data: CartSpeed,
+              type: "cartSpeed"
+            },
+
+            function(error) {
+               if (error) {
+                  console.log("signal error ("
+                              + error.code
+                              + "): " + error.message);
+              } else {
+                  console.log("sending cart speed " + CartSpeed );
+              } 
+            }                      
+          );
+    });
+
+  var LIDATA=0;
+
+  
+
+    socket.on('LIDATA', function (data) { //receive lidar data. Formatted as a string with NNNN:DDD. NNNN=distance ; DDD=degree. updates as fast as possible
+
+          LIDATA=data;
+
+          var lidarStrings = LIDATA.split(":");
+
+          var liData = {
+          distance: parseInt(lidarStrings[0]),
+          degree: parseInt(lidarStrings[1])
+        };
+        dataSession.signal(
+          {
+            data: liData,
+            type: "liData"
+          },
+
+          function(error) {
+             if (error) {
+                console.log("signal error ("
+                            + error.code
+                            + "): " + error.message);
+            } else {
+                console.log("sending current liData " + liData.distance + " " + liData.degree);
+            } 
+          }                      
+        );        
+    });
+
+
+  var GPS=0;
+
+  
+
+    socket.on('GPS', function (data) { //receive GPS data. Formatted as a string -> latitude + ',' + longitude.
+
+          GPS=data;
+
+    }); 
+
+  /////////////////////////////////////////////END - receive values from sensor arduino & GPS/////////////////////////////////////////////
+  session.on('disconnect', function() {
+    console.log('Connection closed');
+  });
+
+  dataSession.on('disconnect', function() {
+    console.log('Data Connection closed');
+  });
+</script>
+
+</body>
+</html>

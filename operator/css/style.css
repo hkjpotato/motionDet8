@@ -1,0 +1,26 @@
+p {display: inline-block;}
+
+
+.tabbable{
+  margin-top: 100px;
+  margin-bottom: 5%;
+  margin-left: 5%;
+  margin-right: 5%;
+	}
+#active, #testing, #map, #scheduler{
+	margin:5% 5% 5% 5%;
+	}
+
+#myPublisher {
+	position:relative;
+	width:800px;
+	height:600px;}
+
+#bar{
+	position:absolute;
+	top:20%;
+	left:20%;
+	width:400px;
+	height:10px;
+	z-index:9999;
+	background-color:blue;}
