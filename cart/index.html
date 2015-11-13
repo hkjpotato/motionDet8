@@ -100,7 +100,7 @@
 
 <body>
 
-<p id="txt">Check the permission of cameras first before you go to the seperate link</p>
+<p id="txt">Check the permission of cameras first before you go to the seperate link(V8)</p>
 
 <div id="audioSection" >
   <div id="cart">
@@ -123,8 +123,8 @@
 </div>
 
 
-<script type="text/javascript">
 
+<script type="text/javascript">
   var apiKey = "45251312";
 
   var frontId = "2_MX40NTI1MTMxMn5-MTQ0MzM3NTU5NDgxOX4xNXYzTXQ3SERSZkk0bXM3UEl4cUVxbXN-UH4";
@@ -192,63 +192,43 @@
 </script>
 
 <script type="text/javascript">
-  dataSession.on("signal:power", function(event) { 
-  if (event.data == true) {
-    console.log("Signal sent from connection " + event.from.id);
-    if (!sendingGPS) {
-      sendingGPS = setInterval(function() {
-        var currentLat = GPStableLat.shift();
-        GPStableLat.push(currentLat);
-        var currentLng = GPStableLng.shift();
-        GPStableLng.push(currentLng);
-        var currentLocation = {
-          lat: currentLat,
-          lng: currentLng
-        };
-        dataSession.signal(
-          {
-            data: currentLocation,
-            type: "gpsData"
-          },
 
-          function(error) {
-             if (error) {
-                console.log("signal error ("
-                            + error.code
-                            + "): " + error.message);
-            } else {
-                console.log("sending current location " + currentLat + " " + currentLng);
-            } 
-          }                      
-        );
+  var currentLat; //// GPS data
+  var currentLng;
+  //Line#197 This is for testing. It uses the fault GPS data. Delete this part when real GPS data is available
+//   dataSession.on("signal:power", function(event) { 
+//   if (event.data == true) {
+//     console.log("Signal sent from connection " + event.from.id);
+//     if (!sendingGPS) {
+//       sendingGPS = setInterval(function() {
+//         //var currentLat = GPStableLat.shift();
+//         GPStableLat.push(currentLat);
+//         //var currentLng = GPStableLng.shift();
+//         GPStableLng.push(currentLng);
+//         var currentLocation = {
+//           lat: currentLat,
+//           lng: currentLng
+//         };
+//         dataSession.signal(
+//           {
+//             data: currentLocation,
+//             type: "gpsData"
+//           },
 
-      }, 1000);
-    }
-  }       
-});
+//           function(error) {
+//              if (error) {
+//                 console.log("signal error ("
+//                             + error.code
+//                             + "): " + error.message);
+//             } else {
+//                 console.log("sending current location " + currentLat + " " + currentLng);
+//             } 
+//           });
 
-// For testing the motion detetction function 
-var test = 0;
-setInterval(function() {
-        var CartSpeed=((test++)%5);
-        dataSession.signal(
-          {
-            data: CartSpeed,
-            type: "cartSpeed"
-          },
-
-          function(error) {
-             if (error) {
-                console.log("signal error ("
-                            + error.code
-                            + "): " + error.message);
-            } else {
-                console.log("sending cart speed " + CartSpeed );
-            } 
-          }                      
-        );
-  
-}, 1000);
+//       }, 1000);
+//     }
+//   }       
+// });
 </script>
 
 <script type="text/javascript">
@@ -474,6 +454,8 @@ setInterval(function() {
           );
     });
 
+    
+
   var LIDATA=0;
 
   
@@ -507,15 +489,46 @@ setInterval(function() {
     });
 
 
-  var GPS=0;
 
-  
 
-    socket.on('GPS', function (data) { //receive GPS data. Formatted as a string -> latitude + ',' + longitude.
-
-          GPS=data;
-
+    socket.on('GPSLatt', function (data) { //receive GPS data. Formatted as a string -> latitude + ',' + longitude.
+    
+    currentLat = data;
+        //console.log("latitude" + currentLat);
     }); 
+
+  socket.on('GPSLong', function (data) { //receive GPS data. Formatted as a string -> latitude + ',' + longitude.
+    
+    currentLng = data;
+        //console.log("longitud" + currentLng);
+    }); 
+  
+      var sendingGPS = setInterval(function() {
+        // GPStableLat.push(currentLat);
+        // GPStableLng.push(currentLng);
+        var currentLocation = {
+          lat: parseFloat(currentLat),
+          lng: parseFloat(currentLng)
+        };
+        dataSession.signal(
+          {
+            data: currentLocation,
+            type: "gpsData"
+          },
+
+          function(error) {
+             if (error) {
+                console.log("signal error ("
+                            + error.code
+                            + "): " + error.message);
+            } else {
+                console.log("sending current location " + currentLat + " " + currentLng);
+            } 
+          }                      
+        );
+
+      }, 1000);
+  
 
   /////////////////////////////////////////////END - receive values from sensor arduino & GPS/////////////////////////////////////////////
   session.on('disconnect', function() {
